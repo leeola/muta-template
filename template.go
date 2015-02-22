@@ -139,7 +139,9 @@ func (sr *streamRenderer) Render(fi *muta.FileInfo,
 func TemplateOpts(templatesPath string, opts Options) muta.Streamer {
 	sr, err := newStreamRenderer(templatesPath, opts)
 	var b bytes.Buffer
-	return func(fi *muta.FileInfo, chunk []byte) (*muta.FileInfo, []byte, error) {
+	return muta.NewEasyStreamer("template.Template", func(fi *muta.FileInfo,
+		chunk []byte) (*muta.FileInfo, []byte, error) {
+
 		switch {
 		case err != nil:
 			return fi, chunk, err
@@ -156,7 +158,7 @@ func TemplateOpts(templatesPath string, opts Options) muta.Streamer {
 			b.Write(chunk)
 			return nil, nil, nil
 		}
-	}
+	})
 }
 
 // An alias for TemplateOpts, with default options and user data
