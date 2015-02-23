@@ -97,3 +97,16 @@ func TestRender(t *testing.T) {
 			"<div>Import <div>Partial</div>\n</div>\n")
 	})
 }
+
+func TestTemplate(t *testing.T) {
+	tmplDir := filepath.Join("_test", "fixtures", "templates")
+
+	Convey("Should ignore no content files", t, func() {
+		s := Template(tmplDir).Stream
+		oFi := muta.NewFileInfo("foo")
+		fi, chunk, err := s(oFi, nil)
+		So(err, ShouldBeNil)
+		So(fi, ShouldEqual, oFi)
+		So(chunk, ShouldBeNil)
+	})
+}

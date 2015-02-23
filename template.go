@@ -151,6 +151,9 @@ func TemplateOpts(templatesPath string, opts Options) muta.Streamer {
 
 		case chunk == nil:
 			chunk, _ := ioutil.ReadAll(&b)
+			if len(chunk) == 0 {
+				return fi, nil, nil
+			}
 			return sr.Render(fi, chunk)
 
 		default:
