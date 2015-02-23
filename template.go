@@ -132,28 +132,34 @@ func (sr *streamRenderer) Render(fi *muta.FileInfo,
 	}
 
 	chunk, _ = ioutil.ReadAll(&b)
+	if len(chunk) == 0 {
+		chunk = nil
+	}
 	return fi, chunk, nil
 
 }
 
 func TemplateOpts(templatesPath string, opts Options) muta.Streamer {
 	sr, err := newStreamRenderer(templatesPath, opts)
+	if err != nil {
+		return muta.ErrorStreamer(err)
+	}
+
 	var b bytes.Buffer
+	var lastRenderFi *muta.FileInfo
 	return muta.NewEasyStreamer("template.Template", func(fi *muta.FileInfo,
 		chunk []byte) (*muta.FileInfo, []byte, error) {
 
 		switch {
-		case err != nil:
-			return fi, chunk, err
-
 		case fi == nil:
 			return nil, nil, nil
 
 		case chunk == nil:
-			chunk, _ := ioutil.ReadAll(&b)
-			if len(chunk) == 0 {
+			if fi == lastRenderFi {
 				return fi, nil, nil
 			}
+			lastRenderFi = fi
+			chunk, _ := ioutil.ReadAll(&b)
 			return sr.Render(fi, chunk)
 
 		default:

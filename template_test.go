@@ -101,10 +101,16 @@ func TestRender(t *testing.T) {
 func TestTemplate(t *testing.T) {
 	tmplDir := filepath.Join("_test", "fixtures", "templates")
 
-	Convey("Should ignore no content files", t, func() {
+	Convey("Should render templates with nil content", t, func() {
 		s := Template(tmplDir).Stream
 		oFi := muta.NewFileInfo("foo")
+		oFi.Ctx["template"] = "plain.tmpl"
 		fi, chunk, err := s(oFi, nil)
+		So(err, ShouldBeNil)
+		So(fi, ShouldEqual, oFi)
+		So(string(chunk), ShouldEqual, "<div>Plain</div>\n")
+
+		fi, chunk, err = s(oFi, nil)
 		So(err, ShouldBeNil)
 		So(fi, ShouldEqual, oFi)
 		So(chunk, ShouldBeNil)
