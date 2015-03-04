@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"text/template"
 
 	"github.com/leeola/muta"
 )
@@ -37,7 +37,7 @@ type Options struct {
 // to the base name. Ie, `foo.tmpl`, `../bar.tmpl` and `partial/baz.tmpl`
 func loadRelTemplates(ps []string) (*template.Template, error) {
 	if len(ps) == 0 {
-		return nil, errors.New("At least one path is required")
+		return nil, errors.New("muta-template: At least one path is required")
 	}
 
 	// TODO: Intelligently assign base to the most base path
@@ -113,7 +113,8 @@ func (sr *streamRenderer) Render(fi *muta.FileInfo,
 			return fi, chunk, nil
 		} else {
 			return nil, nil, errors.New(fmt.Sprintf(
-				`Ctx["%s"] was not a string`, sr.Opts.CtxTemplateKeyword))
+				`muta-template: Ctx["%s"] was not a string`,
+				sr.Opts.CtxTemplateKeyword))
 		}
 	}
 
@@ -128,6 +129,7 @@ func (sr *streamRenderer) Render(fi *muta.FileInfo,
 	var b bytes.Buffer
 	err := sr.Template.ExecuteTemplate(&b, t, tData)
 	if err != nil {
+		err = errors.New(fmt.Sprint("muta-template: ", err.Error()))
 		return fi, chunk, err
 	}
 
