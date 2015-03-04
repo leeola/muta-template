@@ -119,7 +119,7 @@ func (sr *streamRenderer) Render(fi *muta.FileInfo,
 	}
 
 	tData := map[string]interface{}{
-		"Content": string(chunk),
+		"Content": template.HTML(chunk),
 	}
 
 	if sr.Opts.IncludeFrontMatter && fi.Ctx["frontmatter"] != nil {

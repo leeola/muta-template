@@ -74,6 +74,16 @@ func TestRender(t *testing.T) {
 		So(string(chunk), ShouldResemble, "<div>Content foo</div>\n")
 	})
 
+	Convey("Should not escape the Content", t, func() {
+		sr, _ := newStreamRenderer(tmplDir, NewOptions())
+		fi := &muta.FileInfo{Ctx: map[string]interface{}{
+			"template": "content.tmpl",
+		}}
+		_, chunk, err := sr.Render(fi, []byte("<em>foo</em>"))
+		So(err, ShouldBeNil)
+		So(string(chunk), ShouldResemble, "<div>Content <em>foo</em></div>\n")
+	})
+
 	Convey("Should add frontmatter with the FrontMatter keyword", t, func() {
 		sr, _ := newStreamRenderer(tmplDir, NewOptions())
 		fi := &muta.FileInfo{Ctx: map[string]interface{}{
